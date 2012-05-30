@@ -81,7 +81,7 @@ app.controllers.map = new Ext.Controller({
     }, function(err, msg) {
       // We failed to get the users geolocation, 
       // Default to hardcoded location - Las vegas
-      alert("$fh.geo failed - err : ", err, " :: msg :", msg);
+      alert("$fh.geo failed - err : " + err + " :: msg :" + msg);
       app.controllers.map.initMap(36.12342,-115.17075);
     });
   },
