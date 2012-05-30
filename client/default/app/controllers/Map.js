@@ -80,26 +80,31 @@ app.controllers.map = new Ext.Controller({
     $fh.geo({
       interval: 0
     }, function(res){
-      pos = new google.maps.LatLng(res.lat, res.lon);
-      map.setCenter(pos);
-
-      // Remove any previously created markers
-      app.controllers.map.clearMarkers();
-
-      // Create a marker at the current location
-      app.controllers.map.markers.push(new google.maps.Marker({
-        position: pos,        
-        map: map,
-        icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=0|00FF00|000000'
-      }));  
-
-      // Get markers from the cloud
-      app.controllers.map.loadPoints();
-      
-    }, function() {
-      // We failed to get the users geolocation, fallback to geo ip
-      alert("$fh.geo failed");      
+      initMap(res.lat, res.lon);
+    }, function(err, msg) {
+      // We failed to get the users geolocation, 
+      // Default to hardcoded location - Las vegas
+      alert("$fh.geo failed - err : ", err, " :: msg :", msg);
+      initMap(36.12342,-115.17075);
     });
+  },
+  
+  initMap: function(lat, lon) {
+    pos = new google.maps.LatLng(lat, lon);
+    map.setCenter(pos);
+
+    // Remove any previously created markers
+    app.controllers.map.clearMarkers();
+
+    // Create a marker at the current location
+    app.controllers.map.markers.push(new google.maps.Marker({
+      position: pos,        
+      map: map,
+      icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=0|00FF00|000000'
+    }));  
+
+    // Get markers from the cloud
+    app.controllers.map.loadPoints(lat, lon);    
   }
 
 });
