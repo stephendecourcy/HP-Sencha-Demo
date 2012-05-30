@@ -181,7 +181,7 @@ The payment function() now needs to be added to our cloud functions in main.js i
 	  });
 	}
 
-To expose the payment function as a public endpoint, add it to the modules.exports definition at the end of the mail.js file. After adding it, the modules.exports should look as follows:
+To expose the payment function as a public endpoint, add it to the module.exports definition at the end of the main.js file. After adding it, the module.exports should look as follows:
 
 	module.exports={
 		payment:payment,
