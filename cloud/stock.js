@@ -67,8 +67,9 @@ var stock = {
 	 * It will clear up the response and only return stock symbol as string.
 	 */
 	processSymbolRes : function(res) {
-		var resBody = res.body;
-    console.log('processSymbolRes :: resBody = ', resBody);
+		console.log('processSymbolRes :: res = ', res);
+    
+    var resBody = res.body;    
 		var removedHeadRes = resBody.replace("YAHOO.Finance.SymbolSuggest.ssCallback(", "");
 		//remove jsonp callback header
 		var removedTailRes = removedHeadRes.substr(0, removedHeadRes.length - 1);
