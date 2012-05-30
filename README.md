@@ -104,19 +104,31 @@ You will have seen from Step 1 that we added a list component to the Twitter vie
 
 To populate our store with tweets we add the following function to the main.js file in our cloud directory. The app.stores.twitter using the app.models.Twitter will invoke this call to populate the list automatically due to it's proxy. 
 
-	function getTweets() {
-	  var username   = 'feedhenry';
+	/*
+	 * Twitter
+	 */
+	function getTweets(params,callback) {
+	  var username   = 'hpcloud';
 	  var num_tweets = 10;
 	  var url        = 'http://search.twitter.com/search.json?q=' + username;
-
+	
 	  var response = $fh.web({
 	    url: url,
 	    method: 'GET',
 	    allowSelfSignedCert: true
+	  },function(err,response){
+	    var rtn={'data': $fh.parse(response.body).results};
+	    callback(err,rtn);
 	  });
-	  return {'data': $fh.parse(response.body).results};
 	}
 
+To expose the get tweets function as a public endpoint, add it to the modules.exports definition at the end of the mail.js file. After adding it, the modules.exports should look as follows:
+
+	module.exports={
+	  	getTweets:getTweets,
+	  	getCachedPoints:getCachedPoints,
+		getPoints:getPoints
+	};
 
 ## Task
 
