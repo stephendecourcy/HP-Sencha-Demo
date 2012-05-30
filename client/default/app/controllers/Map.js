@@ -73,9 +73,6 @@ app.controllers.map = new Ext.Controller({
    * Get the users location and draw a marker at their location
    */
   getLocation: function(options){
-    // Instance of the google map
-    var map = Ext.getCmp("map").map;
-    var pos = {};
 
     $fh.geo({
       interval: 0
@@ -90,6 +87,10 @@ app.controllers.map = new Ext.Controller({
   },
   
   initMap: function(lat, lon) {
+    // Instance of the google map
+    var map = Ext.getCmp("map").map;
+    var pos = {};
+
     pos = new google.maps.LatLng(lat, lon);
     map.setCenter(pos);
 
