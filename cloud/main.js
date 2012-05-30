@@ -18,7 +18,7 @@ var MARKERS = {
 
 function getMarkers(params) {
   // Default to markers around Las Vegas
-  var res = MAREKRS;
+  var res = MARKERS;
   if( params.lat && params.lon ) {
     res = {};
     res.locations = [];
