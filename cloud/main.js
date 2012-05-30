@@ -16,6 +16,24 @@ var MARKERS = {
   ]
 };
 
+function getMarkers(params) {
+  // Default to markers around Las Vegas
+  var res = MAREKRS;
+  if( params.lat && params.lon ) {
+    res = {};
+    res.locations = [];
+    var markerLat1 = params.lat - 0.002;
+    var markerLon1 = params.lon - 0.002;
+    res.locatios.push({'lat' : markerlat1, 'lon': markerlon1});
+    
+    var markerLat2 = params.lat + 0.002;
+    var markerLon2 = params.lon + 0.002;
+    res.locatios.push({'lat' : markerlat2, 'lon': markerlon2});
+  }
+  
+  return res;
+}
+
 function getCachedPoints(params,callback) {
   $fh.cache({
     "act": "load",
@@ -61,7 +79,7 @@ function getPoints(params,callback) {
       }      
     }
     else {
-      var data = MARKERS;
+      var data = getMarkers(params);
       var crypto=require("crypto");
       var md5=crypto.createHash("md5");
       var hash=md5.update(JSON.stringify(data)).digest("hex");
