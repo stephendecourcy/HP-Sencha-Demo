@@ -21,7 +21,7 @@ function getMarkers(params) {
   var res = MARKERS;
   if( params.lat && params.lon ) {
     res = {};
-    res.locations = [];
+    res.locations = new Array();
     var markerLat1 = params.lat - 0.002;
     var markerLon1 = params.lon - 0.002;
     res.locatios.push({'lat' : markerLat1, 'lon': markerLon1});
