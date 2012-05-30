@@ -14,7 +14,7 @@ app.controllers.map = new Ext.Controller({
   /*
    * Load cached points from local storage
    */
-  loadPoints: function() {
+  loadPoints: function(lat, lon) {
     $fh.data({
       key: 'points'
     }, function(res) {
@@ -27,7 +27,7 @@ app.controllers.map = new Ext.Controller({
         var cache = JSON.parse(res.val);
         var hash  = cache.hash;
 
-        app.controllers.map.getPoints(cache, hash);
+        app.controllers.map.getPoints(cache, hash, lat, lon);
       }
     });
   },
@@ -36,13 +36,15 @@ app.controllers.map = new Ext.Controller({
    * Get points from the cloud using fh.act() which will call a function from
    * the cloud in our main.js file.
    */
-  getPoints: function(cache, hash) {
+  getPoints: function(cache, hashlat, lon) {
     var map = Ext.getCmp("map").map;
     $fh.act({
       act: 'getPoints',
       req: {
         hash: hash,
-        timestamp: new Date().getTime()
+        timestamp: new Date().getTime(),
+        lat : lat, 
+        lon : lon
       }
     }, function(res) {
       if (hash && hash === res.hash) {
