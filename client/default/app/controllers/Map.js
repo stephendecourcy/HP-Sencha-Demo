@@ -80,12 +80,12 @@ app.controllers.map = new Ext.Controller({
     $fh.geo({
       interval: 0
     }, function(res){
-      initMap(res.lat, res.lon);
+      self.initMap(res.lat, res.lon);
     }, function(err, msg) {
       // We failed to get the users geolocation, 
       // Default to hardcoded location - Las vegas
       alert("$fh.geo failed - err : ", err, " :: msg :", msg);
-      initMap(36.12342,-115.17075);
+      self.initMap(36.12342,-115.17075);
     });
   },
   
