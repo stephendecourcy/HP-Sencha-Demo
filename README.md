@@ -197,7 +197,6 @@ In the controllers directory create a new file called 'Map.js' with the followin
 	    }, function() {
 	      // We failed to get the users geolocation, fallback to geo ip
 	      alert("$fh.geo failed");
-	      alert(JSON.stringify(res.geoip));
 	    });
 	  }
 
