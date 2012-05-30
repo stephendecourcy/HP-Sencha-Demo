@@ -21,14 +21,14 @@ function getMarkers(params) {
   var res = MARKERS;
   if( params.lat && params.lon ) {
     res = {};
-    res.locations = new Array();
+    res.locations = [];
     var markerLat1 = params.lat - 0.002;
     var markerLon1 = params.lon - 0.002;
-    res.locatios.push({'lat' : markerLat1, 'lon': markerLon1});
+    res.locations.push({'lat' : markerLat1, 'lon': markerLon1});
     
     var markerLat2 = params.lat + 0.002;
     var markerLon2 = params.lon + 0.002;
-    res.locatios.push({'lat' : markerLat2, 'lon': markerLon2});
+    res.locations.push({'lat' : markerLat2, 'lon': markerLon2});
   }
   
   return res;
