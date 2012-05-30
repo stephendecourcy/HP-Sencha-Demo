@@ -122,7 +122,7 @@ To populate our store with tweets we add the following function to the main.js f
 	  });
 	}
 
-To expose the getTweets function as a public endpoint, add it to the modules.exports definition at the end of the main.js file. After adding it, the module.exports should look as follows:
+To expose the getTweets function as a public endpoint, add it to the module.exports definition at the end of the main.js file. After adding it, the module.exports should look as follows:
 
 	module.exports={
 	  	getTweets:getTweets,
