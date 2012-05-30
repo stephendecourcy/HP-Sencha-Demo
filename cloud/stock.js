@@ -68,6 +68,7 @@ var stock = {
 	 */
 	processSymbolRes : function(res) {
 		var resBody = res.body;
+    console.log('processSymbolRes :: resBody = ', resBody);
 		var removedHeadRes = resBody.replace("YAHOO.Finance.SymbolSuggest.ssCallback(", "");
 		//remove jsonp callback header
 		var removedTailRes = removedHeadRes.substr(0, removedHeadRes.length - 1);
