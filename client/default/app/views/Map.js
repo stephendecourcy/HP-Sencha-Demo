@@ -6,8 +6,7 @@ app.views.map = new Ext.Map({
   id: 'map',
   title: 'Map',
   mapOptions: {
-    lat : 36.12342, 
-    lon : -115.17075,
+    center: new google.maps.LatLng(36.12342,-115.17075),     
   	zoom : 15
   }
 });
