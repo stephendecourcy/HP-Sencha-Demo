@@ -1,35 +1,49 @@
 /*
  * Maps
  */
-// Cache points for 10 seconds
+// Cache points for 30 seconds
 var CACHE_TIME = 30;
 var MARKERS = {
   locations: [
     {
-      lat: '52.245671',
-      lon: '-7.080002'
+      lat: '36.12242',
+      lon: '-115.16975'
     },
     {
-      lat: '52.257861',
-      lon: '-7.136993'
+      lat: '36.12442',
+      lon: '-115.17175'
     }
   ]
 };
 
-/*
- * If we have points cached in the cloud load them.
- */
-function getCachedPoints() {
-  var ret = $fh.cache({
-    "act": "load",
-    "key": "points"
-  });
-  return ret.val;
+function getMarkers(params) {
+  // Default to markers around Las Vegas
+  var res = MARKERS;
+  if( params.lat && params.lon ) {
+    res = {};
+    res.locations = [];
+    var markerLat1 = params.lat - 0.002;
+    var markerLon1 = params.lon - 0.002;
+    res.locations.push({'lat' : markerLat1, 'lon': markerLon1});
+    
+    var markerLat2 = params.lat + 0.002;
+    var markerLon2 = params.lon + 0.002;
+    res.locations.push({'lat' : markerLat2, 'lon': markerLon2});
+  }
+  
+  return res;
 }
 
-/*
- * Similar to the above function but instead we are saving the points
- */
+function getCachedPoints(params,callback) {
+  $fh.cache({
+    "act": "load",
+    "key": "points"
+  },function(err,res){
+    callback(err,res);
+  });
+  
+}
+
 function cachePoints(hash, data) {
   var obj = {
     "hash": hash,
@@ -39,41 +53,47 @@ function cachePoints(hash, data) {
   $fh.cache({
     "act": "save",
     "key": "points",
-    "val": obj,
+    "value": JSON.stringify(obj),
     "expire": CACHE_TIME
+  }, function(err, res) {
+    console.log('cachePoints :: err = ', err, ' :: res = ', res);
   });
 }
 
- /* 
-  * This function would be called from the device using an act call.
-  */
-function getPoints() {
+function getPoints(params,callback) {
+  
   var response = {};
-  var cache    = getCachedPoints();
+  getCachedPoints({}, function(err, res) {
+    console.log('getCachedPoints :: err = ', err, ' :: res = ', res);
+    if( res ) {
+      console.log('getPoints - cached response = ', res);
+      // Parse the cached data
+      var cache = JSON.parse(res);
 
-  if (cache.length === 0) {
-    var data = MARKERS;
-    var hash = $fh.hash({
-      algorithm: 'MD5',
-      text: $fh.stringify(data)
-    });
-
-    // Cache the data
-    cachePoints(hash, data);
-
-    // Build the response
-    response = {'data': data, 'hash':hash, 'cached':false};
-  } else {
-    // Parse the cached data
-    cache = $fh.parse(cache);
-
-    if( $params.hash && $params.hash === cache.hash ) {
-      // Client data is up to date
-      response = {'hash':$params.hash, 'cached':true};
-    } else {
-      // Hash value from client missing or incorrect, return cached cloud data
-      response = cache;
+      if( params.hash && params.hash === cache.hash ) {
+        console.log('Hash check matches - Client data is up to date');
+        response = {'hash':params.hash, 'cached':true};
+      } else {
+        // Hash value from client missing or incorrect, return cached cloud data
+        response = cache;
+      }      
     }
-  }
-  return response;
+    else {
+      var data = getMarkers(params);
+      var crypto=require("crypto");
+      var md5=crypto.createHash("md5");
+      var hash=md5.update(JSON.stringify(data)).digest("hex");
+      // Cache the data
+      cachePoints(hash, data);
+  
+      // Build the response
+      response = {'data': data, 'hash':hash, 'cached':false};
+    } 
+    callback(null, response);
+  });
 }
+
+module.exports={
+  getCachedPoints:getCachedPoints,
+	getPoints:getPoints
+};
