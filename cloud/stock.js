@@ -64,6 +64,7 @@ var stock = {
           		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"];
           		//mash up the data and return to client.
               (new xml2js.Parser()).parseString(quoteRes, function(err, quotejsres) {
+                console.log('quotejsres : ', quotejsres);
                 var stockInfo = {
                   "Name" : quotejsres["Name"], 
                   "Symbol" : quotejsres["Symbol"], 
