@@ -158,90 +158,92 @@ Note we have an error alert dialog box to catch any errors that could be returne
 ## Step 3 -- Cloud
 Open stock.js in cloud folder and put the following code inside:
 
-	 /**
+	/**
 	 * Mash multiple business apis returned data.
 	 * Stock Symble lookup: Using YAHOO API. JSONP
 	 * Stock Info lookup: Using WebServiceX API . SOAP
 	 *
-	 **/
-
-		var stock = {
-			//YAHOO finance api for looking up stock symbol with a company name. It is a JSONP service.
-			yahooApi : "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={0}&callback=YAHOO.Finance.SymbolSuggest.ssCallback",
-			//WebServiceX API (Open API). It returns stock details with specific stock symbol.
-			webServiceXApi : "http://www.webservicex.net/stockquote.asmx",
-			/**
-			 * The function will look for stock symbol based on "name" param, and return stock info from WebServiceX
+	 */
+	var stock = {
+	  //YAHOO finance api for looking up stock symbol with a company name. It is a JSONP service.
+		yahooApi : "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={0}&callback=YAHOO.Finance.SymbolSuggest.ssCallback",
+		//WebServiceX API (Open API). It returns stock details with specific stock symbol.
+		webServiceXApi : "http://www.webservicex.net/stockquote.asmx",
+		/**
+		 * The function will look for stock symbol based on "name" param, and return stock info from WebServiceX
+		 *
+		 * Return stock information.
+		 */
+		getStockInfo : function(name, callback) {
+			//Compose request url using user input.
+			var yahooApiUrl = stock.yahooApi.replace("{0}", name);
+			/*
+			 * Perform Webcall
+			 * Raw response from YAHOO JSONP api which contains stock symbol as well as other information we do not want.
 			 *
-			 * Return stock information.
 			 */
-			getStockInfo : function(name) {
-				//Compose request url using user input.
-				var yahooApiUrl = this.yahooApi.replace("{0}", name);
-				/*
-				 * Perform Webcall
-				 * Raw response from YAHOO JSONP api which contains stock symbol as well as other information we do not want.
-				 *
-				 */
-				var symbolRes = $fh.web({
-					url : yahooApiUrl,
-					method : "GET",
-					charset : "UTF-8",
-					period : 3600
-				});
-
-			//Clear up YAHOO response and only keep the information "stock symbol" we need.
-			var stockSymbol = this.processSymbolRes(symbolRes);
-
-			// construct SOAP envelop. We could do this manually or just use a Javascript Library.
-			var soapEnvolope = '<?xml version="1.0" encoding="utf-8"?>' + '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body>' + '<GetQuote xmlns="http://www.webserviceX.NET/">' + '<symbol>' + stockSymbol + '</symbol>' + '</GetQuote>' + '</soap:Body>' + '</soap:Envelope>';
-
-			//Retrieve SOAP url
-			var stockInfoUrl = this.webServiceXApi;
-
-			//Prepare webcall parameters
-			var opt = {
-				url : stockInfoUrl,
-				method : "POST",
+			$fh.web({
+				url : yahooApiUrl,
+				method : "GET",
 				charset : "UTF-8",
-				contentType : "text/xml",
-				body : soapEnvolope,
 				period : 3600
-			}
-
-			//Perform webcall
-			var stockInfoSoapRes = $fh.web(opt);
-
-			//getSOAPElement will retrieve specific XML object within SOAP response
-	    	var body=stockInfoSoapRes.body.replace(/&lt;/g,"<").replace(/&gt;/g,">");
-			var xmlData = getSOAPElement("GetQuoteResult", body);
-	    
-	    	var xmlObj=xml(xmlData);
-
-	   		//Create Object
-	    	var stockInfo={
-		      Symbol:xmlObj.find("Symbol").text(),
-		      Last:xmlObj.find("Last").text(),
-		      Open:xmlObj.find("Open").text(),
-		      "Date":xmlObj.find("Date").text(),
-		      Time:xmlObj.find("Time").text(),
-		      Change:xmlObj.find("Change").text(),
-		      Name:xmlObj.find("Name").text()
-	    	}
-	   
-			//mash up the data and return to client.
-			return {
-				stockSymbol : stockSymbol,
-				stockInfo :stockInfo
-	    };
+			}, function(err, symbolRes) {
+	      if( err ) {
+	        callback(err, null);
+	      }
+	      else {
+	        //Clear up YAHOO response and only keep the information "stock symbol" we need.
+	        var stockSymbol = stock.processSymbolRes(symbolRes);
+	        
+	        // construct SOAP envelop. We could do this manually or just use a Javascript Library.
+	        var soapEnvolope = '<?xml version="1.0" encoding="utf-8"?>' + '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + '<soap:Body>' + '<GetQuote xmlns="http://www.webserviceX.NET/">' + '<symbol>' + stockSymbol + '</symbol>' + '</GetQuote>' + '</soap:Body>' + '</soap:Envelope>';
+	        
+	        //Retrieve SOAP url
+	        var stockInfoUrl = stock.webServiceXApi;
+	        
+	        //Prepare webcall parameters
+	        var opt = {
+	        	url : stockInfoUrl,
+	        	method : "POST",
+	        	charset : "UTF-8",
+	        	contentType : "text/xml",
+	        	body : soapEnvolope,
+	        	period : 3600
+	        }
+	        
+	        //Perform webcall
+	        $fh.web(opt, function(err, res) {
+	          if( err ) {
+	            callback(err, null);
+	          }
+	          else {
+	            console.log('stockInfo : ' , res.body);
+	          	var xml2js=require ("xml2js");
+	          	//getSOAPElement will retrieve specific XML object within SOAP response
+	          	(new xml2js.Parser()).parseString(res.body, function(err, jsres) {
+	          		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"];
+	          		//mash up the data and return to client.
+	              (new xml2js.Parser()).parseString(quoteRes, function(err, quotejsres) {
+	                console.log('quotejsres : ', quotejsres);
+	                var stock = quotejsres["Stock"];
+	              
+	            		callback(err, {
+	            			stockSymbol : stockSymbol,
+	            			stockInfo : stock
+	            		});
+	              });
+	          	});
+	          }
+	        });
+	      }
+			});
 		},
-		
 		/**
 		 * Process Response from YAHOO stock symbol api.
 		 * It will clear up the response and only return stock symbol as string.
 		 */
 		processSymbolRes : function(res) {
-			var resBody = res.body;
+	    var resBody = res.body;    
 			var removedHeadRes = resBody.replace("YAHOO.Finance.SymbolSuggest.ssCallback(", "");
 			//remove jsonp callback header
 			var removedTailRes = removedHeadRes.substr(0, removedHeadRes.length - 1);
@@ -251,10 +253,45 @@ Open stock.js in cloud folder and put the following code inside:
 			return resObj.ResultSet.Result[0].symbol;
 			//return the first matched stock symbol
 		}
-	}
+	};
+	
+	exports.getStockInfo = stock.getStockInfo;
+
 
 Please read the comments to have a step by step guide of the cloud intergration.
-We also use a XML to JSON parser and a util.js file.
+
+Since we are now using external Node.js modules we need to define these dependancies in a package.json file. Create this file inside the /cloud directory and add the following contents:
+
+	{
+	  "name": "hp-sencha-demo",
+	  "version": "0.1.0",
+	  "dependencies" : { 
+	    "libxmljs" : "*",
+	    "xml2js":"*",
+	    "request":"*"
+	  }
+	}
+
+To allow the stock functionality to be invoked, we need to add a public function to pur main.js file as follows:
+
+	/*
+	 * Stocks
+	 */
+	var stock=require("./stock.js");
+	
+	function getStockInfo(param, callback) {
+	  return stock.getStockInfo(param.name, callback);
+	}
+
+We also need to expose the "getStockInfo" function as a public function by adding it to the module.exports at the end of the file. Our module.exports should now look as follows:
+
+	module.exports={
+	  getStockInfo:getStockInfo,
+	  payment:payment,
+	  getTweets:getTweets,
+	  getCachedPoints:getCachedPoints,
+	  getPoints:getPoints
+	};
 
 ![](https://github.com/feedhenry/HP-Sencha-Demo/raw/v7/docs/stocksResult.png)
 	  	
