@@ -6,7 +6,7 @@ app.views.map = new Ext.Map({
   id: 'map',
   title: 'Map',
   mapOptions: {
-    zoom: 11,
+    zoom: 15,
   }
 });
 
