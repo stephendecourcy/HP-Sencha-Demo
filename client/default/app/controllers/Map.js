@@ -38,7 +38,7 @@ app.controllers.map = new Ext.Controller({
    */
   getPoints: function(cache, hash, lat, lon) {
     var map = Ext.getCmp("map").map;
-    var points = cahce;
+    var points;
     $fh.act({
       act: 'getPoints',
       req: {
@@ -50,6 +50,7 @@ app.controllers.map = new Ext.Controller({
     }, function(res) {
       if (hash && hash === res.hash) {
         console.log("Client data is at the latest version");
+        points = JSON.parse(cahce);
       } else {
         points = res;
         $fh.data({
