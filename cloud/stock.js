@@ -63,10 +63,15 @@ var stock = {
           	(new xml2js.Parser()).parseString(res.body, function(err, jsres) {
           		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"]["Stock"];
           		//mash up the data and return to client.
-          		callback(err, {
-          			stockSymbol : stockSymbol,
-          			stockInfo : quoteRes
-          		});
+              (new xml2js.Parser()).parseString(quoteRes, function(err, quotejsres) {
+                console.log('quotejsres : ', quotejsres);
+                var stock = quotejsres["Stock"];
+              
+            		callback(err, {
+            			stockSymbol : stockSymbol,
+            			stockInfo : stock
+            		});
+              });
           	});
           }
         });
