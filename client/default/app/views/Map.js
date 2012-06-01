@@ -6,13 +6,13 @@ app.views.map = new Ext.Map({
   id: 'map',
   title: 'Map',
   mapOptions: {
-    zoom: 11,
+    zoom: 15,
   }
 });
 
 app.views.MapView = Ext.extend(Ext.Panel, {
   title: 'Map',
-  iconCls: 'locate',
+  iconCls: 'home',
   layout: {
    type: 'fit'
   },
