@@ -65,10 +65,11 @@ var stock = {
           		//mash up the data and return to client.
               (new xml2js.Parser()).parseString(quoteRes, function(err, quotejsres) {
                 console.log('quotejsres : ', quotejsres);
+                var stock = quotejsres["Stock"];
                 var stockInfo = {
-                  "Name" : quotejsres["Name"], 
-                  "Symbol" : quotejsres["Symbol"], 
-                  "Last" : quotejsres["Last"], 
+                  "Name" : stock["Name"], 
+                  "Symbol" : stock["Symbol"], 
+                  "Last" : stock["Last"], 
                   "Change" : quotejsres["Change"],
                   "Date" : quotejsres["Date"],
                   "Open": quotejsres["Open"],
@@ -79,7 +80,7 @@ var stock = {
               
             		callback(err, {
             			stockSymbol : stockSymbol,
-            			stockInfo : stockInfo
+            			stockInfo : stock
             		});
               });
           	});
