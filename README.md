@@ -168,16 +168,27 @@ The payment function() now needs to be added to our cloud functions in main.js i
 	/*
 	 * Payment
 	 */ 
-	function payment() {
-	  var cardType   = $params.cardType;
-	  var cardNumber = $params.cardNumber;
+	function payment(params,callback) {
+	  var cardType   = params.cardType;
+	  var cardNumber = params.cardNumber;
 	  var url = "http://www.webservicex.net/CreditCard.asmx/ValidateCardNumber?cardType=" + cardType + "&cardNumber=" + cardNumber;
-
-	  return $fh.web({
+	
+	  $fh.web({
 	    url: url,
 	    method: 'GET'
+	  },function(err,res){
+	    callback(err,res);
 	  });
 	}
+
+To expose the payment function as a public endpoint, add it to the module.exports definition at the end of the main.js file. After adding it, the module.exports should look as follows:
+
+	module.exports={
+		payment:payment,
+	  	getTweets:getTweets,
+	  	getCachedPoints:getCachedPoints,
+		getPoints:getPoints
+	};
 
 ## Task
 
