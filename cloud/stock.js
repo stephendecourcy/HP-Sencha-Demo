@@ -63,10 +63,24 @@ var stock = {
           	(new xml2js.Parser()).parseString(res.body, function(err, jsres) {
           		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"];
           		//mash up the data and return to client.
-          		callback(err, {
-          			stockSymbol : stockSymbol,
-          			stockInfo : quoteRes
-          		});
+              (new xml2js.Parser()).parseString(quoteRes, function(err, quotejsres) {
+                var stockInfo = {
+                  "Name" : quotejsres["Name"], 
+                  "Symbol" : quotejsres["Symbol"], 
+                  "Last" : quotejsres["Last"], 
+                  "Change" : quotejsres["Change"],
+                  "Date" : quotejsres["Date"],
+                  "Open": quotejsres["Open"],
+                  "Time": quotejsres["Time"]
+                };
+                
+                console.log("stockInfo : ", stockInfo);
+              
+            		callback(err, {
+            			stockSymbol : stockSymbol,
+            			stockInfo : stockInfo
+            		});
+              });
           	});
           }
         });
