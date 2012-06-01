@@ -38,6 +38,7 @@ app.controllers.map = new Ext.Controller({
    */
   getPoints: function(cache, hash, lat, lon) {
     var map = Ext.getCmp("map").map;
+    var points = cahce;
     $fh.act({
       act: 'getPoints',
       req: {
@@ -50,6 +51,7 @@ app.controllers.map = new Ext.Controller({
       if (hash && hash === res.hash) {
         console.log("Client data is at the latest version");
       } else {
+        points = res;
         $fh.data({
           act: 'save',
           key: 'points',
@@ -58,8 +60,8 @@ app.controllers.map = new Ext.Controller({
       }
       var map = Ext.getCmp("map").map;
 
-      for (var i = 0; i < res.data.locations.length; i++) {
-        var point = res.data.locations[i];
+      for (var i = 0; i < points.data.locations.length; i++) {
+        var point = points.data.locations[i];
         var pos   = new google.maps.LatLng(point.lat, point.lon);
 
         app.controllers.map.markers.push(new google.maps.Marker({
