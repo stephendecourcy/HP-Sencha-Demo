@@ -50,7 +50,7 @@ app.controllers.map = new Ext.Controller({
     }, function(res) {
       if (hash && hash === res.hash) {
         console.log("Client data is at the latest version");
-        points = JSON.parse(cache);
+        points = cache;
       } else {
         points = res;
         $fh.data({
