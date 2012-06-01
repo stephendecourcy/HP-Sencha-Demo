@@ -57,6 +57,7 @@ var stock = {
             callback(err, null);
           }
           else {
+            console.log('stockInfo : ' , res.body);
           	var xml2js=require ("xml2js");
           	//getSOAPElement will retrieve specific XML object within SOAP response
           	(new xml2js.Parser()).parseString(res.body, function(err, jsres) {
