@@ -61,28 +61,12 @@ var stock = {
           	var xml2js=require ("xml2js");
           	//getSOAPElement will retrieve specific XML object within SOAP response
           	(new xml2js.Parser()).parseString(res.body, function(err, jsres) {
-          		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"];
+          		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"]["Stock"];
           		//mash up the data and return to client.
-              (new xml2js.Parser()).parseString(quoteRes, function(err, quotejsres) {
-                console.log('quotejsres : ', quotejsres);
-                var stock = quotejsres["Stock"];
-                var stockInfo = {
-                  "Name" : stock["Name"], 
-                  "Symbol" : stock["Symbol"], 
-                  "Last" : stock["Last"], 
-                  "Change" : quotejsres["Change"],
-                  "Date" : quotejsres["Date"],
-                  "Open": quotejsres["Open"],
-                  "Time": quotejsres["Time"]
-                };
-                
-                console.log("stockInfo : ", stockInfo);
-              
-            		callback(err, {
-            			stockSymbol : stockSymbol,
-            			stockInfo : stock
-            		});
-              });
+          		callback(err, {
+          			stockSymbol : stockSymbol,
+          			stockInfo : quoteRes
+          		});
           	});
           }
         });
