@@ -61,7 +61,7 @@ var stock = {
           	var xml2js=require ("xml2js");
           	//getSOAPElement will retrieve specific XML object within SOAP response
           	(new xml2js.Parser()).parseString(res.body, function(err, jsres) {
-          		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"]["Stock"];
+          		var quoteRes=jsres["soap:Body"]["GetQuoteResponse"]["GetQuoteResult"];
           		//mash up the data and return to client.
               (new xml2js.Parser()).parseString(quoteRes, function(err, quotejsres) {
                 console.log('quotejsres : ', quotejsres);
