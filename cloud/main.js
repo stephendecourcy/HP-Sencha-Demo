@@ -24,7 +24,7 @@ function payment(params,callback) {
 }
 
 
-exports.nodevers = function (params, callback){
+function nodevers (params, callback){
   return callback(undefined, {"version":process.version});
 };
 /*
@@ -145,5 +145,6 @@ module.exports={
   payment:payment,
   getTweets:getTweets,
   getCachedPoints:getCachedPoints,
-  getPoints:getPoints
+  getPoints:getPoints,
+  "nodevers":nodevers
 };
