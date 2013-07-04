@@ -146,5 +146,5 @@ module.exports={
   getTweets:getTweets,
   getCachedPoints:getCachedPoints,
   getPoints:getPoints,
-  "nodevers":nodevers
+  nodevers:nodevers
 };
